@@ -39,11 +39,13 @@ export default function LoginPage() {
       });
 
       if (response.ok) {
-        router.push("/quiz");
+        const data = await response.json();
+        router.push(data.redirectTo || "/quiz");
       } else {
         const data = await response.json();
         setError(data.error || "Terjadi kesalahan saat login");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError("Terjadi kesalahan jaringan");
     } finally {

@@ -42,6 +42,7 @@ export default function RegisterPage() {
         const data = await response.json();
         setError(data.error || "Terjadi kesalahan saat mendaftar");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError("Terjadi kesalahan jaringan");
     } finally {

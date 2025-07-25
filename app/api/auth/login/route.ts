@@ -1,22 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/app/lib/prisma";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email("Email tidak valid"),
+  password: z.string().min(6, "Password minimal 6 karakter"),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
-
-    // Validate input
-    if (!email || !password) {
+    const body = await request.json();
+    const validationResult = loginSchema.safeParse(body);
+    
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Email dan password harus diisi" },
+        { error: validationResult.error.issues[0].message },
         { status: 400 }
       );
     }
 
+    const { email, password } = validationResult.data;
+
     // Find user by email
     const user = await prisma.user.findUnique({
       where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        is_admin: true,
+        created_at: true
+      }
     });
 
     if (!user) {
@@ -36,13 +52,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
-
     return NextResponse.json(
       { 
         message: "Login berhasil",
-        user: userWithoutPassword 
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          is_admin: user.is_admin,
+          created_at: user.created_at
+        },
+        redirectTo: user.is_admin ? "/admin" : "/quiz"
       },
       { status: 200 }
     );
