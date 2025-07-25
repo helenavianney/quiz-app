@@ -37,17 +37,19 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "Email atau password salah" },
+        { error: "Email salah" },
         { status: 401 }
       );
     }
 
+    console.log("Input password:", password);
+    console.log("Stored hash:", user.password);
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return NextResponse.json(
-        { error: "Email atau password salah" },
+        { error: "Invalid Password" },
         { status: 401 }
       );
     }

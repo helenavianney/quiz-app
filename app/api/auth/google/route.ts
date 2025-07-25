@@ -4,7 +4,7 @@ export async function GET(request: NextRequest) {
   // Google OAuth configuration
   const googleClientId = process.env.GOOGLE_CLIENT_ID;
   const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${process.env.NEXTAUTH_URL}/api/auth/google/callback`;
-  
+
   if (!googleClientId) {
     return NextResponse.json(
       { error: "Google OAuth tidak dikonfigurasi" },

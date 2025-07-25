@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "@/app/StoreProvider";
 import AuthSessionProvider from "@/app/components/SessionProvider";
 
-const manrope = Manrope({
+const inter = Inter({
   subsets: ['latin'],
-}
-)
+  display: 'swap',
+  fallback: ['system-ui', 'arial']
+});
 
 export const metadata: Metadata = {
   title: "Quiz Master | Tantang Pengetahuanmu",
@@ -29,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${manrope.className} antialiased`}
+        className={`${inter.className} antialiased`}
       >
         <AuthSessionProvider>
           <StoreProvider>
