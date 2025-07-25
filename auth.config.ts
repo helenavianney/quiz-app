@@ -8,7 +8,6 @@ import bcrypt from 'bcryptjs';
 export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/login',
-    signUp: '/register',
   },
   providers: [
     Google({
