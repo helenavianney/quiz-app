@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import { setQuizzes } from '@/app/redux/quizSlice';
@@ -9,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/lib/store";
 
 export default function QuizSelectionPage() {
+  const { data: session } = useSession();
   const dispatch = useDispatch();
   const { quizzes } = useSelector((state: RootState) => state.quizzes);
   const { isLoading } = useSelector((state: RootState) => state.ui);
@@ -34,6 +36,32 @@ export default function QuizSelectionPage() {
       </div>
       
       <div className="max-w-7xl mx-auto relative z-10">
+        {/* User info and signout */}
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center">
+            <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+              <span className="text-yellow-600 font-semibold">
+                {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
+              </span>
+            </div>
+            <div>
+              <p className="text-gray-800 font-medium">
+                Selamat datang, {session?.user?.name || 'User'}!
+              </p>
+              <p className="text-gray-500 text-sm">{session?.user?.email}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Keluar
+          </button>
+        </div>
+        
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
             Pilih <span className="text-yellow-500">Quiz</span> Favoritmu
