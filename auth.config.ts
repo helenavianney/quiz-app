@@ -36,18 +36,14 @@ export const authOptions: NextAuthOptions = {
 
             const passwordsMatch = await bcrypt.compare(password, user.password);
 
-            if (passwordsMatch) {
-                return {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                is_admin: user.is_admin,
-                };
-            } else {
-                throw new Error('Invalid Password');
-            }
+            if (!passwordsMatch) throw new Error('Invalid Password');
 
-            return null;
+            return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            is_admin: user.is_admin,
+            };
         },
     }),
   ],
