@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const message = searchParams.get("message");
-  
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: ""
   });
@@ -30,7 +28,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,20 +37,16 @@ export default function LoginPage() {
       });
 
       if (response.ok) {
-        router.push("/quiz");
+        router.push("/login?message=Registrasi berhasil! Silakan login.");
       } else {
         const data = await response.json();
-        setError(data.error || "Terjadi kesalahan saat login");
+        setError(data.error || "Terjadi kesalahan saat mendaftar");
       }
     } catch (err) {
       setError("Terjadi kesalahan jaringan");
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGoogleLogin = () => {
-    window.location.href = "/api/auth/google";
   };
 
   return (
@@ -90,21 +84,15 @@ export default function LoginPage() {
           <div>
             <div className="text-center mb-8">
               <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🔑</span>
+                <span className="text-2xl">🎯</span>
               </div>
               <h2 className="text-3xl font-bold text-gray-800">
-                Masuk ke <span className="text-yellow-500">QuizMaster</span>
+                Bergabung dengan <span className="text-yellow-500">QuizMaster</span>
               </h2>
               <p className="mt-2 text-gray-600">
-                Selamat datang kembali! Lanjutkan petualangan quiz Anda.
+                Daftar sekarang dan mulai tantangan quiz yang menarik!
               </p>
             </div>
-
-            {message && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-green-700 text-sm mb-6">
-                {message}
-              </div>
-            )}
 
             <form className="space-y-6" onSubmit={handleSubmit}>
               {error && (
@@ -112,6 +100,22 @@ export default function LoginPage() {
                   {error}
                 </div>
               )}
+
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  Nama Lengkap
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-500"
+                  placeholder="Masukkan nama lengkap Anda"
+                />
+              </div>
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -141,7 +145,8 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-500"
-                  placeholder="Masukkan password Anda"
+                  placeholder="Minimal 6 karakter"
+                  minLength={6}
                 />
               </div>
 
@@ -155,10 +160,10 @@ export default function LoginPage() {
                   {isLoading ? (
                     <div className="flex items-center">
                       <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
-                      Masuk...
+                      Mendaftar...
                     </div>
                   ) : (
-                    "Masuk"
+                    "Daftar Sekarang"
                   )}
                 </button>
               </div>
@@ -176,10 +181,10 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Google Login Button */}
+            {/* Google Sign Up Button */}
             <div className="mt-6">
               <button
-                onClick={handleGoogleLogin}
+                onClick={() => window.location.href = "/api/auth/google"}
                 className="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-200"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -188,15 +193,15 @@ export default function LoginPage() {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
-                Masuk dengan Google
+                Daftar dengan Google
               </button>
             </div>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Belum punya akun?{" "}
-                <Link href="/register" className="font-medium text-yellow-600 hover:text-yellow-500 transition duration-200">
-                  Daftar di sini
+                Sudah punya akun?{" "}
+                <Link href="/login" className="font-medium text-yellow-600 hover:text-yellow-500 transition duration-200">
+                  Masuk di sini
                 </Link>
               </p>
             </div>
