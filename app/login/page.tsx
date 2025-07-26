@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { signIn, getSession } from "next-auth/react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,20 +31,18 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      const result = await signIn('credentials', {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        router.push(data.redirectTo || "/quiz");
+      if (result?.ok) {
+        const session = await getSession();
+        const redirectTo = session?.user?.is_admin ? "/admin" : "/quiz";
+        router.push(redirectTo);
       } else {
-        const data = await response.json();
-        setError(data.error || "Terjadi kesalahan saat login");
+        setError("Email atau password salah");
       }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
@@ -54,7 +53,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "/api/auth/google";
+    signIn('google', { callbackUrl: '/quiz' });
   };
 
   return (

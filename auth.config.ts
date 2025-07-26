@@ -9,6 +9,32 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/login',
   },
+  callbacks: {
+    async signIn({ user, account }) {
+      return true;
+    },
+    async redirect({ url, baseUrl }) {
+      // After Google login, redirect based on user role
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+      return baseUrl + '/quiz';
+    },
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.id = token.id as string;
+        session.user.is_admin = token.is_admin as boolean;
+      }
+      return session;
+    },
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id;
+        token.is_admin = user.is_admin;
+      }
+      return token;
+    },
+  },
   providers: [
     Google({
           clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -52,21 +78,4 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
-
-  callbacks: {
-    async session({ session, token }) {
-      if (session?.user) {
-        session.user.id = token.id as string;
-        session.user.is_admin = token.is_admin as boolean;
-      }
-      return session;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.is_admin = user.is_admin;
-      }
-      return token;
-    },
-  },
 };
