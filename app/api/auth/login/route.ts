@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
           is_admin: user.is_admin,
           created_at: user.created_at
         },
-        redirectTo: "/quiz"
+        redirectTo: user.is_admin ? "/admin" : "/quiz"
       },
       { status: 200 }
     );
