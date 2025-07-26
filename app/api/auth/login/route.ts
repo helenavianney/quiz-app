@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
     console.log("Stored hash:", user.password);
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log(isPasswordValid);
 
     if (!isPasswordValid) {
       return NextResponse.json(
@@ -64,10 +65,11 @@ export async function POST(request: NextRequest) {
           is_admin: user.is_admin,
           created_at: user.created_at
         },
-        redirectTo: user.is_admin ? "/admin" : "/quiz"
+        redirectTo: "/quiz"
       },
       { status: 200 }
     );
+    
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(

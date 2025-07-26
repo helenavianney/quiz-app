@@ -9,10 +9,13 @@ import { setQuestions, nextQuestion, resetQuestionIndex } from "@/app/redux/ques
 import { setQuizzes, setQuizCompleted } from "@/app/redux/quizSlice";
 import { setAnswers, setSelectedAnswerId } from "@/app/redux/answerSlice";
 import { setLoading } from "@/app/redux/uiSlice";
-import { incrementScore, resetScore, setShowResult } from "@/app/redux/scoreSlice";
+import { incrementScore, resetScore, setShowResult, setQuizId, setUserId } from "@/app/redux/scoreSlice";
 import { RootState } from "@/app/lib/store";
+import { saveQuizResult } from "@/app/utils/saveQuizResult";
+import { useSession } from "next-auth/react";
 
 export default function QuizPage({ params }: { params: { id: string } }) {
+  const { data: session } = useSession();
   const dispatch = useDispatch();
   const questions = useSelector((state: RootState) => state.questions.questions);
   const currentQuestionIndex = useSelector((state: RootState) => state.questions.currentQuestionIndex);
@@ -41,12 +44,17 @@ export default function QuizPage({ params }: { params: { id: string } }) {
       dispatch(setQuizzes(quizzesData));
       dispatch(setQuestions(questionsData));
       dispatch(setAnswers(answersData));
+      dispatch(setQuizId(params.id));
+      
+      if (session?.user?.id) {
+        dispatch(setUserId(session.user.id));
+      }
       
       setTimeout(() => dispatch(setLoading(false)), 2500);
     };
     
     fetchData();
-  }, [dispatch]);
+  }, [dispatch, params.id, session?.user?.id]);
   
   const quizQuestions = questions.filter(q => q.quiz_id === params.id);
   const currentQuestion = quizQuestions[currentQuestionIndex];
@@ -63,12 +71,21 @@ export default function QuizPage({ params }: { params: { id: string } }) {
       dispatch(incrementScore());
     }
     
-    setTimeout(() => {
+    setTimeout(async () => {
       if (currentQuestionIndex < quizQuestions.length - 1) {
         dispatch(nextQuestion());
         dispatch(setSelectedAnswerId(null));
         dispatch(setShowResult(false));
       } else {
+        // Save quiz result when completed
+        if (session?.user?.id) {
+          try {
+            await saveQuizResult(session.user.id, params.id, score + (selectedAnswer?.isCorrect ? 1 : 0));
+            console.log('Quiz result saved successfully');
+          } catch (error) {
+            console.error('Failed to save quiz result:', error);
+          }
+        }
         dispatch(setQuizCompleted(true));
       }
     }, 1500);
