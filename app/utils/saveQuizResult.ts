@@ -1,5 +1,7 @@
 export const saveQuizResult = async (userId: string, quizId: string, score: number) => {
   try {
+    console.log('Saving quiz result:', { userId, quizId, score });
+    
     const response = await fetch('/api/results', {
       method: 'POST',
       headers: {
@@ -13,7 +15,9 @@ export const saveQuizResult = async (userId: string, quizId: string, score: numb
     });
 
     if (!response.ok) {
-      throw new Error('Failed to save quiz result');
+      const errorData = await response.text();
+      console.error('API Error Response:', errorData);
+      throw new Error(`Failed to save quiz result: ${response.status}`);
     }
 
     const data = await response.json();

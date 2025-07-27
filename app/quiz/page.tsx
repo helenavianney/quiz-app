@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import QuickAction from "@/app/components/QuickAction";
 import { setQuizzes } from '@/app/redux/quizSlice';
 import { setLoading } from '@/app/redux/uiSlice';
 import { useDispatch, useSelector } from "react-redux";
@@ -72,6 +73,7 @@ export default function QuizSelectionPage() {
           </p>
         </div>
         
+        
         {isLoading ? (
           <div className="bg-white rounded-xl shadow-md p-8">
             <LoadingSpinner message="Memuat daftar quiz..." />
@@ -80,8 +82,8 @@ export default function QuizSelectionPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {quizzes.map((quiz) => (
             <div 
-              key={quiz.id}
-              className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group"
+            key={quiz.id}
+            className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group"
             >
               <div className="h-2 bg-yellow-400"></div>
               <div className="p-6">
@@ -100,7 +102,7 @@ export default function QuizSelectionPage() {
                 <Link 
                   href={`/quiz/${quiz.id}`}
                   className="block w-full bg-white hover:bg-yellow-500 text-yellow-500 hover:text-white font-medium py-3 px-4 rounded-lg text-center transition-colors duration-200 border border-yellow-500 group-hover:border-yellow-500"
-                >
+                  >
                   Kerjakan Quiz
                 </Link>
               </div>
@@ -110,17 +112,20 @@ export default function QuizSelectionPage() {
         )}
         
 
-        <div className="mt-12 text-center">
+        <div className="mt-12 text-center mb-12">
           <Link 
             href="/" 
             className="inline-flex items-center text-yellow-600 hover:text-yellow-700 font-medium"
-          >
+            >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
             </svg>
             Kembali ke Beranda
           </Link>
         </div>
+        
+        {/* Admin Quick Actions */}
+        {session?.user?.is_admin && <QuickAction />}
       </div>
     </div>
   );
