@@ -12,6 +12,7 @@ import { setLoading } from "@/app/redux/uiSlice";
 import { incrementScore, resetScore, setShowResult, setQuizId, setUserId } from "@/app/redux/scoreSlice";
 import { RootState } from "@/app/lib/store";
 import { saveQuizResult } from "@/app/utils/saveQuizResult";
+import { shuffleArray } from "@/app/utils/shuffle";
 import { useSession } from "next-auth/react";
 
 export default function QuizPage({ params }: { params: Promise<{ id: string }> }) {
@@ -60,7 +61,7 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
   const quizQuestions = questions.filter(q => q.quiz_id === id);
   const currentQuestion = quizQuestions[currentQuestionIndex];
   const currentAnswers = currentQuestion 
-    ? answers.filter(a => a.question_id === currentQuestion.id)
+    ? shuffleArray(answers.filter(a => a.question_id === currentQuestion.id))
     : [];
 
   const handleAnswerSelect = (answerId: string) => {

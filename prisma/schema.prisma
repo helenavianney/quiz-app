@@ -46,7 +46,7 @@ model Answer {
 }
 
 model Result {
-  id         String   @unique @default(uuid())
+  id         String   @id @default(uuid())
   user_id    String
   user       User     @relation(fields: [user_id], references: [id])
   quiz_id    String
