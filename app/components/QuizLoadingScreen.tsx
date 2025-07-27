@@ -25,7 +25,7 @@ export default function QuizLoadingScreen() {
           {/* Loading facts */}
           <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-4 max-w-md">
             <p className="text-gray-700 text-center italic">
-              "Tahukah kamu? Mengerjakan quiz secara rutin dapat meningkatkan daya ingat dan kemampuan berpikir kritis."
+              &quot;Tahukah kamu? Mengerjakan quiz secara rutin dapat meningkatkan daya ingat dan kemampuan berpikir kritis.&quot;
             </p>
           </div>
         </div>
