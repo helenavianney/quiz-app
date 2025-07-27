@@ -4,7 +4,7 @@ interface Answer {
     id: string;
     question_id: string;
     text: string;
-    isCorrect: boolean;
+    is_correct: boolean;
 }
 
 interface AnswerState {

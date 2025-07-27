@@ -4,7 +4,7 @@ type Answer = {
   id: string;
   question_id: string;
   text: string;
-  isCorrect: boolean;
+  is_correct: boolean;
 };
 
 type Question = {
@@ -46,10 +46,10 @@ export default function QuestionCard({
     }
     
     // Showing results - highlight correct and incorrect answers
-    if (answer.isCorrect) {
+    if (answer.is_correct) {
       return `${baseClasses} border-green-500 bg-green-50`;
     }
-    if (isSelected && !answer.isCorrect) {
+    if (isSelected && !answer.is_correct) {
       return `${baseClasses} border-red-500 bg-red-50`;
     }
     return `${baseClasses} border-gray-200 bg-white opacity-70`;
@@ -85,11 +85,11 @@ export default function QuestionCard({
               {/* Result indicators */}
               {showResult && (
                 <div className="ml-2 flex-shrink-0">
-                  {answer.isCorrect ? (
+                  {answer.is_correct ? (
                     <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
-                  ) : selectedAnswerId === answer.id && !answer.isCorrect ? (
+                  ) : selectedAnswerId === answer.id && !answer.is_correct ? (
                     <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>

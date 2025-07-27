@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, use } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";
 import QuestionCard from "@/app/components/QuestionCard";
@@ -14,7 +14,8 @@ import { RootState } from "@/app/lib/store";
 import { saveQuizResult } from "@/app/utils/saveQuizResult";
 import { useSession } from "next-auth/react";
 
-export default function QuizPage({ params }: { params: { id: string } }) {
+export default function QuizPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { data: session } = useSession();
   const dispatch = useDispatch();
   const questions = useSelector((state: RootState) => state.questions.questions);
@@ -44,7 +45,7 @@ export default function QuizPage({ params }: { params: { id: string } }) {
       dispatch(setQuizzes(quizzesData));
       dispatch(setQuestions(questionsData));
       dispatch(setAnswers(answersData));
-      dispatch(setQuizId(params.id));
+      dispatch(setQuizId(id));
       
       if (session?.user?.id) {
         dispatch(setUserId(session.user.id));
@@ -54,9 +55,9 @@ export default function QuizPage({ params }: { params: { id: string } }) {
     };
     
     fetchData();
-  }, [dispatch, params.id, session?.user?.id]);
+  }, [dispatch, id, session?.user?.id]);
   
-  const quizQuestions = questions.filter(q => q.quiz_id === params.id);
+  const quizQuestions = questions.filter(q => q.quiz_id === id);
   const currentQuestion = quizQuestions[currentQuestionIndex];
   const currentAnswers = currentQuestion 
     ? answers.filter(a => a.question_id === currentQuestion.id)
@@ -67,7 +68,8 @@ export default function QuizPage({ params }: { params: { id: string } }) {
     dispatch(setShowResult(true));
     
     const selectedAnswer = answers.find(a => a.id === answerId);
-    if (selectedAnswer?.isCorrect) {
+    console.log('Selected answer:', selectedAnswer);
+    if (selectedAnswer?.is_correct) {
       dispatch(incrementScore());
     }
     
@@ -80,7 +82,7 @@ export default function QuizPage({ params }: { params: { id: string } }) {
         // Save quiz result when completed
         if (session?.user?.id) {
           try {
-            await saveQuizResult(session.user.id, params.id, score + (selectedAnswer?.isCorrect ? 1 : 0));
+            await saveQuizResult(session.user.id, id, score + (selectedAnswer?.is_correct ? 1 : 0));
             console.log('Quiz result saved successfully');
           } catch (error) {
             console.error('Failed to save quiz result:', error);
@@ -103,7 +105,7 @@ export default function QuizPage({ params }: { params: { id: string } }) {
 
             <div className="mb-8 text-center">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-                {quizzes.find(quiz => quiz.id === params.id)?.title}
+                {quizzes.find(quiz => quiz.id === id)?.title}
               </h1>
               <p className="text-gray-600">
                 Pertanyaan {currentQuestionIndex + 1} dari {quizQuestions.length}
@@ -154,7 +156,7 @@ export default function QuizPage({ params }: { params: { id: string } }) {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
-                href={`/quiz/${params.id}`} 
+                href={`/quiz/${id}`} 
                 className="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
                 onClick={() => {
                   dispatch(resetQuestionIndex());
