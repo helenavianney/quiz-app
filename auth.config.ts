@@ -11,6 +11,23 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email! }
+        });
+        
+        if (!existingUser) {
+          await prisma.user.create({
+            data: {
+              name: user.name!,
+              email: user.email!,
+              password: '',
+              is_admin: false,
+              created_at: new Date()
+            }
+          });
+        }
+      }
       return true;
     },
     async redirect({ url, baseUrl }) {
@@ -27,7 +44,7 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.is_admin = user.is_admin;
