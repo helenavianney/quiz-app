@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -185,7 +186,7 @@ export default function RegisterPage() {
             {/* Google Sign Up Button */}
             <div className="mt-6">
               <button
-                onClick={() => window.location.href = "/api/auth/google"}
+                onClick={() => signIn('google')}
                 className="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-200"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">

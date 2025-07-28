@@ -27,6 +27,20 @@ export async function POST(request: NextRequest) {
 
   const { user_id, quiz_id, score } = validationResult.data;
 
+  // Validasi foreign key
+  const [user, quiz] = await Promise.all([
+    prisma.user.findUnique({ where: { id: user_id } }),
+    prisma.quiz.findUnique({ where: { id: quiz_id } })
+  ]);
+
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  if (!quiz) {
+    return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
+  }
+
   const result = await prisma.result.create({
     data: {
       user_id,
