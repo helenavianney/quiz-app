@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -27,11 +27,7 @@ export default function EditQuiz({ params }: { params: Promise<{ id: string }> }
   
   const [questions, setQuestions] = useState<Question[]>([]);
 
-  useEffect(() => {
-    fetchQuizData();
-  }, [id]);
-
-  const fetchQuizData = async () => {
+  const fetchQuizData = useCallback(async () => {
     const [quizRes, questionsRes, answersRes] = await Promise.all([
       fetch(`/api/quizzes`),
       fetch('/api/questions'),
@@ -44,19 +40,23 @@ export default function EditQuiz({ params }: { params: Promise<{ id: string }> }
       answersRes.json()
     ]);
 
-    const quiz = quizzes.find((q: any) => q.id === id);
+    const quiz = quizzes.find((q: unknown) => (q as { id: string }).id === id);
     if (quiz) {
       setQuizData({ title: quiz.title, description: quiz.description });
     }
 
-    const quizQuestions = allQuestions.filter((q: any) => q.quiz_id === id);
-    const questionsWithAnswers = quizQuestions.map((q: any) => ({
-      ...q,
-      answers: allAnswers.filter((a: any) => a.question_id === q.id)
+    const quizQuestions = allQuestions.filter((q: unknown) => (q as { quiz_id: string }).quiz_id === id);
+    const questionsWithAnswers = quizQuestions.map((q: unknown) => ({
+      ...(q as Question),
+      answers: allAnswers.filter((a: unknown) => (a as { question_id: string }).question_id === (q as { id: string }).id)
     }));
     
     setQuestions(questionsWithAnswers);
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchQuizData();
+  }, [fetchQuizData]);
 
   const updateQuestion = (questionIndex: number, text: string) => {
     const updated = [...questions];

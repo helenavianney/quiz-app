@@ -124,7 +124,7 @@ export default function CreateQuiz() {
       }
 
       router.push('/admin?message=Quiz berhasil dibuat!');
-    } catch (err) {
+    } catch {
       setError('Gagal membuat quiz. Silakan coba lagi.');
     } finally {
       setIsLoading(false);

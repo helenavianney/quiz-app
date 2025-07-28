@@ -31,7 +31,7 @@ export const scoreSlice = createSlice({
         setUserId: (state, action: PayloadAction<string>) => {
             state.userId = action.payload;
         },
-        saveResult: (state) => {
+        saveResult: () => {
             // This will trigger the API call in component
         },
     },
