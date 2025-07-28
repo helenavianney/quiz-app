@@ -27,6 +27,8 @@ export async function POST(request: NextRequest) {
 
   const { user_id, quiz_id, score } = validationResult.data;
 
+  console.log(user_id);
+
   // Validasi foreign key
   const [user, quiz] = await Promise.all([
     prisma.user.findUnique({ where: { id: user_id } }),
