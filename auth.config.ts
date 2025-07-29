@@ -12,12 +12,12 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
-        const existingUser = await prisma.user.findUnique({
+        let dbUser = await prisma.user.findUnique({
           where: { email: user.email! }
         });
-        
-        if (!existingUser) {
-          await prisma.user.create({
+
+        if (!dbUser) {
+          dbUser = await prisma.user.create({
             data: {
               name: user.name!,
               email: user.email!,
@@ -27,6 +27,9 @@ export const authOptions: NextAuthOptions = {
             }
           });
         }
+
+        user.id = dbUser.id;
+        user.is_admin = dbUser.is_admin;
       }
       return true;
     },
@@ -46,35 +49,41 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.is_admin = user.is_admin;
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email! }
+        });
+
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.is_admin = dbUser.is_admin;
+        }
       }
       return token;
     },
   },
   providers: [
     Google({
-          clientId: process.env.GOOGLE_CLIENT_ID!,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        }),
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     Credentials({
-        name: 'credentials',
-        credentials: {
-            email: { label: "Email", type: "email" },
-            password: { label: "Password", type: "password" }
-        },
-        async authorize(credentials) {
-            const schema = z.object({
-                email: z.string().email(),
-                password: z.string().min(6),
-            });
-
-            const { email, password } = schema.parse(credentials);
-
-            const user = await prisma.user.findUnique({
-                where: { email },
-            });
-
+      name: 'credentials',
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        const schema = z.object({
+          email: z.string().email(),
+          password: z.string().min(6),
+        });
+        
+        const { email, password } = schema.parse(credentials);
+        
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
+        
             if (!user) throw new Error('User Not Found');
 
             const passwordsMatch = await bcrypt.compare(password, user.password);

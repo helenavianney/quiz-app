@@ -92,6 +92,7 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
         dispatch(setShowResult(false));
       } else {
         // Save quiz result when completed
+        console.log(session?.user?.id);
         if (session?.user?.id) {
           try {
             await saveQuizResult(session.user.id, id, score + (selectedAnswer?.is_correct ? 1 : 0));
