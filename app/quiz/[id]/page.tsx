@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, use } from "react";
+import { useEffect, use, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";
 import QuestionCard from "@/app/components/QuestionCard";
@@ -60,8 +60,19 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
   
   const quizQuestions = questions.filter(q => q.quiz_id === id);
   const currentQuestion = quizQuestions[currentQuestionIndex];
+  
+  // Memoize shuffled answers untuk setiap question agar tidak berubah saat re-render
+  const shuffledAnswersMap = useMemo(() => {
+    const map = new Map();
+    quizQuestions.forEach(question => {
+      const questionAnswers = answers.filter(a => a.question_id === question.id);
+      map.set(question.id, shuffleArray(questionAnswers));
+    });
+    return map;
+  }, [answers, quizQuestions]);
+  
   const currentAnswers = currentQuestion 
-    ? shuffleArray(answers.filter(a => a.question_id === currentQuestion.id))
+    ? shuffledAnswersMap.get(currentQuestion.id) || []
     : [];
 
   const handleAnswerSelect = (answerId: string) => {

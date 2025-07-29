@@ -78,6 +78,48 @@ export default function EditQuiz({ params }: { params: Promise<{ id: string }> }
     setQuestions(updated);
   };
 
+  const addQuestion = async () => {
+    // Create new question in database
+    const questionResponse = await fetch('/api/questions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: '',
+        quiz_id: id
+      })
+    });
+    
+    const newQuestion = await questionResponse.json();
+    
+    // Create 4 default answers for the new question
+    const answerPromises = [
+      { text: '', is_correct: true },
+      { text: '', is_correct: false },
+      { text: '', is_correct: false },
+      { text: '', is_correct: false }
+    ].map(answer => 
+      fetch('/api/answers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: answer.text,
+          is_correct: answer.is_correct,
+          question_id: newQuestion.id
+        })
+      })
+    );
+    
+    const answerResponses = await Promise.all(answerPromises);
+    const newAnswers = await Promise.all(answerResponses.map(res => res.json()));
+    
+    // Add to local state
+    setQuestions([...questions, {
+      id: newQuestion.id,
+      text: '',
+      answers: newAnswers
+    }]);
+  };
+
   const removeQuestion = async (questionIndex: number) => {
     if (questions.length <= 1) return;
     
@@ -253,6 +295,17 @@ export default function EditQuiz({ params }: { params: Promise<{ id: string }> }
             </div>
           </div>
         ))}
+
+        {/* Add Question Button */}
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={addQuestion}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors duration-200"
+          >
+            + Tambah Pertanyaan
+          </button>
+        </div>
 
         <div className="text-center">
           <button
