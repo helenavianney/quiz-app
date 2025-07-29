@@ -48,7 +48,7 @@ export default function CreateQuiz() {
     }]);
   };
 
-  const removeQuestion = (index: number) => {
+  const removeQuestion = async (index: number) => {
     if (questions.length > 1) {
       setQuestions(questions.filter((_, i) => i !== index));
     }

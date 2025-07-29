@@ -78,6 +78,22 @@ export default function EditQuiz({ params }: { params: Promise<{ id: string }> }
     setQuestions(updated);
   };
 
+  const removeQuestion = async (questionIndex: number) => {
+    if (questions.length <= 1) return;
+    
+    const questionToDelete = questions[questionIndex];
+    
+    // Delete from database if question has ID (existing question)
+    if (questionToDelete.id) {
+      await fetch(`/api/questions?id=${questionToDelete.id}`, {
+        method: 'DELETE'
+      });
+    }
+    
+    // Remove from local state
+    setQuestions(questions.filter((_, i) => i !== questionIndex));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -177,9 +193,20 @@ export default function EditQuiz({ params }: { params: Promise<{ id: string }> }
         {/* Questions */}
         {questions.map((question, questionIndex) => (
           <div key={question.id} className="bg-white rounded-xl shadow-md p-6 border border-yellow-200">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">
-              Pertanyaan {questionIndex + 1}
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-800">
+                Pertanyaan {questionIndex + 1}
+              </h3>
+              {questions.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeQuestion(questionIndex)}
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
+                >
+                  Hapus
+                </button>
+              )}
+            </div>
             
             <div className="space-y-4">
               <div>

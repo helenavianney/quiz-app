@@ -46,3 +46,34 @@ export async function PATCH(request: Request) {
         }
     });
 }
+
+export async function DELETE(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+        return new Response(JSON.stringify({ error: 'Question ID required' }), {
+            status: 400,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    }
+
+    // Delete answers first
+    await prisma.answer.deleteMany({
+        where: { question_id: id }
+    });
+
+    // Delete question
+    await prisma.question.delete({
+        where: { id }
+    });
+
+    return new Response(JSON.stringify({ message: 'Question deleted successfully' }), {
+        status: 200,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+}
