@@ -79,7 +79,7 @@ export default function Home() {
       </div>
       
       <div className="mt-8 text-center text-gray-500 text-sm z-10">
-        © 2025 QuizMaster. Dibuat dengan ❤️ untuk para pencinta pengetahuan.
+        © 2025 QuizMaster by Helena Vianney.
       </div>
     </div>
   );
