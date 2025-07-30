@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, use, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";
 import QuestionCard from "@/app/components/QuestionCard";
 import QuizLoadingScreen from "@/app/components/QuizLoadingScreen";
@@ -10,24 +9,24 @@ import { setQuizzes, setQuizCompleted } from "@/app/redux/quizSlice";
 import { setAnswers, setSelectedAnswerId } from "@/app/redux/answerSlice";
 import { setLoading } from "@/app/redux/uiSlice";
 import { incrementScore, resetScore, setShowResult, setQuizId, setUserId } from "@/app/redux/scoreSlice";
-import { RootState } from "@/app/lib/store";
 import { saveQuizResult } from "@/app/utils/saveQuizResult";
 import { shuffleArray } from "@/app/utils/shuffle";
 import { useSession } from "next-auth/react";
+import { useAppSelector, useAppDispatch } from "@/app/lib/hooks";
 
 export default function QuizPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: session } = useSession();
-  const dispatch = useDispatch();
-  const questions = useSelector((state: RootState) => state.questions.questions);
-  const currentQuestionIndex = useSelector((state: RootState) => state.questions.currentQuestionIndex);
-  const quizzes = useSelector((state: RootState) => state.quizzes.quizzes);
-  const quizCompleted = useSelector((state: RootState) => state.quizzes.quizCompleted);
-  const answers = useSelector((state: RootState) => state.answers.answers);
-  const selectedAnswerId = useSelector((state: RootState) => state.answers.selectedAnswerId);
-  const isLoading = useSelector((state: RootState) => state.ui.isLoading);
-  const score = useSelector((state: RootState) => state.score.score);
-  const showResult = useSelector((state: RootState) => state.score.showResult);
+  const dispatch = useAppDispatch();
+  const questions = useAppSelector((state) => state.questions.questions);
+  const currentQuestionIndex = useAppSelector((state) => state.questions.currentQuestionIndex);
+  const quizzes = useAppSelector((state) => state.quizzes.quizzes);
+  const quizCompleted = useAppSelector((state) => state.quizzes.quizCompleted);
+  const answers = useAppSelector((state) => state.answers.answers);
+  const selectedAnswerId = useAppSelector((state) => state.answers.selectedAnswerId);
+  const isLoading = useAppSelector((state) => state.ui.isLoading);
+  const score = useAppSelector((state) => state.score.score);
+  const showResult = useAppSelector((state) => state.score.showResult);
   
   useEffect(() => {
     const fetchData = async () => {

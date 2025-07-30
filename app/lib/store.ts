@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { questionSlice } from '@/app/redux/questionSlice'
-import { quizSlice } from '../redux/quizSlice'
-import { answerSlice } from '../redux/answerSlice'
-import { uiSlice } from '../redux/uiSlice'
-import { scoreSlice } from '../redux/scoreSlice'
+import { quizSlice } from '@/app/redux/quizSlice'
+import { answerSlice } from '@/app/redux/answerSlice'
+import { uiSlice } from '@/app/redux/uiSlice'
+import { scoreSlice } from '@/app/redux/scoreSlice'
 
 export const makeStore = () => {
     return configureStore({

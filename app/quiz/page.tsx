@@ -7,14 +7,13 @@ import LoadingSpinner from "@/app/components/LoadingSpinner";
 import QuickAction from "@/app/components/QuickAction";
 import { setQuizzes } from '@/app/redux/quizSlice';
 import { setLoading } from '@/app/redux/uiSlice';
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/app/lib/store";
+import { useAppSelector, useAppDispatch } from "@/app/lib/hooks";
 
 export default function QuizSelectionPage() {
   const { data: session } = useSession();
-  const dispatch = useDispatch();
-  const { quizzes } = useSelector((state: RootState) => state.quizzes);
-  const { isLoading } = useSelector((state: RootState) => state.ui);
+  const dispatch = useAppDispatch();
+  const { quizzes } = useAppSelector((state) => state.quizzes);
+  const { isLoading } = useAppSelector((state) => state.ui);
 
   useEffect(() => {
     const fetchQuizzes = async () => {
