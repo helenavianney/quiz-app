@@ -72,7 +72,8 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
       });
       setShuffledAnswersMap(map);
     }
-  }, [answers, answers.length, quizQuestions, quizQuestions.length]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answers.length, quizQuestions.length]);
   
   const currentAnswers = currentQuestion 
     ? shuffledAnswersMap.get(currentQuestion.id) || []
