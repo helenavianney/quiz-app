@@ -6,7 +6,6 @@ import AuthSessionProvider from "@/app/components/SessionProvider";
 
 const inter = Inter({
   subsets: ['latin'],
-  display: 'swap',
   fallback: ['system-ui', 'arial']
 });
 
