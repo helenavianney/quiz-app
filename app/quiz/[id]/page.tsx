@@ -80,7 +80,6 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
     dispatch(setShowResult(true));
     
     const selectedAnswer = answers.find(a => a.id === answerId);
-    console.log('Selected answer:', selectedAnswer);
     if (selectedAnswer?.is_correct) {
       dispatch(incrementScore());
     }
@@ -92,11 +91,9 @@ export default function QuizPage({ params }: { params: Promise<{ id: string }> }
         dispatch(setShowResult(false));
       } else {
         // Save quiz result when completed
-        console.log(session?.user?.id);
         if (session?.user?.id) {
           try {
             await saveQuizResult(session.user.id, id, score + (selectedAnswer?.is_correct ? 1 : 0));
-            console.log('Quiz result saved successfully');
           } catch (error) {
             console.error('Failed to save quiz result:', error);
           }

@@ -1,7 +1,5 @@
 export const saveQuizResult = async (userId: string, quizId: string, score: number) => {
-  try {
-    console.log('Saving quiz result:', { userId, quizId, score });
-    
+  try {    
     const response = await fetch('/api/results', {
       method: 'POST',
       headers: {

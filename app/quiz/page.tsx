@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/lib/store";
 
 export default function QuizSelectionPage() {
-  console.log("Quiz Page Rendered");
   const { data: session } = useSession();
   const dispatch = useDispatch();
   const { quizzes } = useSelector((state: RootState) => state.quizzes);
